@@ -3,165 +3,164 @@
 {% block title %}Dashboard Financeiro{% endblock %}
 
 {% block stylesheets %}
-{{ parent() }} <link rel="stylesheet" href="/css/dashboard.css"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ parent() }}
+<link rel="stylesheet" href="/css/dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block body %}
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
 
-<h1 class="mb-4">
-    Dashboard Financeiro 
-    <span class="text-muted">| {{ mesAtual }}/{{ anoAtual }}</span>
-</h1>
+    <h1 class="mb-4">
+        Dashboard Financeiro
+        <span class="text-muted">| {{ mesAtual }}/{{ anoAtual }}</span>
+    </h1>
 
-<!-- KPIs -->
-<div class="graficos-grid mb-4">
-    <div class="col-md-4">
-        <div class="kpi-card">
-            <div class="kpi-title">Despesas Fixas</div>
-            <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
-        </div>
-    </div>
+    <div class="dashboard-layout">
 
-    <div class="col-md-4">
-        <div class="kpi-card">
-            <div class="kpi-title">Consumo</div>
-            <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
-        </div>
-    </div>
+        <!-- FORMULÁRIO -->
+        <div class="dashboard-form">
+            <div class="card">
+                <h4 class="mb-3">Nova Despesa</h4>
 
-    <div class="col-md-4">
-        <div class="kpi-card">
-            <div class="kpi-title">Pago no Mês</div>
-            <div class="kpi-value text-success">
-                R$ {{ totalPago|number_format(2, ',', '.') }}
+                <form method="post" action="{{ path('financas_dashboard') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Motivo</label>
+                        <input type="text" class="form-control" name="motivo" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Valor</label>
+                        <input type="number" step="0.01" class="form-control" name="valor" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data Consumo</label>
+                        <input type="date" class="form-control" name="data_consumo" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data Pagamento</label>
+                        <input type="date" class="form-control" name="data_pagamento">
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="fixo">
+                        <label class="form-check-label">Despesa fixa</label>
+                    </div>
+
+                    <button type="submit" class="btn-primary-custom">
+                        Salvar
+                    </button>
+                </form>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- GRÁFICOS -->
-<div class="graficos-grid">
-    <div class="col-md-4">
-        <div class="card grafico-card">
-            <h6>Despesas Fixas</h6>
-            <canvas id="graficoFixas"></canvas>
-            <p class="info-text">
-                Total: R$ {{ totalPago|number_format(2, ',', '.') }}
-            </p>
-        </div>
-    </div>
+        <!-- DASHBOARD -->
+        <div class="dashboard-content">
 
-    <div class="col-md-4">
-        <div class="card grafico-card">
-            <h6>Consumo</h6>
-            <canvas id="graficoConsumo"></canvas>
-            <p class="info-text">
-                Total: R$ {{ totalPago|number_format(2, ',', '.') }}
-            </p>
-        </div>
-    </div>
+            <!-- KPIs -->
+            <div class="graficos-grid mb-4">
+                <div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Despesas Fixas</div>
+                        <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
+                    </div>
+                </div>
 
-    <div class="col-md-4">
-        <div class="card grafico-card">
-            <h6>Pagas no Mês</h6>
-            <canvas id="graficoPagas"></canvas>
-            <p class="info-text">
-                Total: R$ {{ totalPago|number_format(2, ',', '.') }}
-            </p>
-        </div>
-    </div>
-</div>
+                <div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Consumo</div>
+                        <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
+                    </div>
+                </div>
 
-<!-- TABELAS -->
-<div class="graficos-grid mt-4">
+                <div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Pago</div>
+                        <div class="kpi-value text-success">
+                            R$ {{ totalPago|number_format(2, ',', '.') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="col-md-4">
-        <div class="card tabela-card">
-            <h6>Despesas Fixas</h6>
+            <!-- GRÁFICOS -->
+            <div class="graficos-grid">
+                <div class="card grafico-card">
+                    <h6>Fixas</h6>
+                    <canvas id="graficoFixas"></canvas>
+                </div>
 
-            {% if despesasFixas is not empty %}
-                <div class="table-container">
-                    <table class="table">
-                        <tbody>
-                            {% for despesa in despesasFixas %}
+                <div class="card grafico-card">
+                    <h6>Consumo</h6>
+                    <canvas id="graficoConsumo"></canvas>
+                </div>
+
+                <div class="card grafico-card">
+                    <h6>Pagas</h6>
+                    <canvas id="graficoPagas"></canvas>
+                </div>
+            </div>
+
+            <!-- TABELAS -->
+            <div class="graficos-grid mt-4">
+
+                <div class="card tabela-card">
+                    <h6>Fixas</h6>
+                    <div class="table-container">
+                        <table class="table">
+                            {% for d in despesasFixas %}
                             <tr>
-                                <td>{{ despesa.ds_motivo }}</td>
-                                <td class="text-end">
-                                    R$ {{ despesa.vl_valor|number_format(2, ',', '.') }}
-                                </td>
+                                <td>{{ d.ds_motivo }}</td>
+                                <td class="text-end">R$ {{ d.vl_valor|number_format(2, ',', '.') }}</td>
                             </tr>
                             {% endfor %}
-                        </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
-            {% else %}
-                <p class="text-muted">Nenhuma despesa.</p>
-            {% endif %}
-        </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card tabela-card">
-            <h6>Consumo</h6>
-
-            {% if despesasConsumo is not empty %}
-                <div class="table-container">
-                    <table class="table">
-                        <tbody>
-                            {% for despesa in despesasConsumo %}
+                <div class="card tabela-card">
+                    <h6>Consumo</h6>
+                    <div class="table-container">
+                        <table class="table">
+                            {% for d in despesasConsumo %}
                             <tr>
-                                <td>{{ despesa.ds_motivo }}</td>
-                                <td>{{ despesa.dt_consumo|date('d/m') }}</td>
-                                <td class="text-end">
-                                    R$ {{ despesa.vl_valor|number_format(2, ',', '.') }}
-                                </td>
+                                <td>{{ d.ds_motivo }}</td>
+                                <td>{{ d.dt_consumo|date('d/m') }}</td>
+                                <td class="text-end">R$ {{ d.vl_valor|number_format(2, ',', '.') }}</td>
                             </tr>
                             {% endfor %}
-                        </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
-            {% else %}
-                <p class="text-muted">Nenhuma despesa.</p>
-            {% endif %}
-        </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card tabela-card">
-            <h6>Pagas</h6>
-
-            {% if despesasPagas is not empty %}
-                <div class="table-container">
-                    <table class="table">
-                        <tbody>
-                            {% for despesa in despesasPagas %}
+                <div class="card tabela-card">
+                    <h6>Pagas</h6>
+                    <div class="table-container">
+                        <table class="table">
+                            {% for d in despesasPagas %}
                             <tr>
-                                <td>{{ despesa.ds_motivo }}</td>
-                                <td>{{ despesa.dt_pag|date('d/m') }}</td>
-                                <td class="text-end">
-                                    R$ {{ despesa.vl_valor|number_format(2, ',', '.') }}
-                                </td>
+                                <td>{{ d.ds_motivo }}</td>
+                                <td>{{ d.dt_pag|date('d/m') }}</td>
+                                <td class="text-end">R$ {{ d.vl_valor|number_format(2, ',', '.') }}</td>
                             </tr>
                             {% endfor %}
-                        </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
-            {% else %}
-                <p class="text-muted">Nenhuma despesa.</p>
-            {% endif %}
+
+            </div>
+
         </div>
     </div>
-
-</div>
-
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    /* 🔥 Plugin texto no centro */
+    /* Plugin texto no centro */
     const centerTextPlugin = {
         id: 'centerText',
         beforeDraw(chart) {

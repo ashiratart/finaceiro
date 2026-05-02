@@ -87,4 +87,9 @@ class DespesasRepository
         
         return (float) $result['total'];
     }
+    public function insertDespesa(array $data): void
+    {
+        // Usa o recurso de inserção segura do DBAL
+        $this->connection->insert('despesas', $data);
+    }
 }
