@@ -37,7 +37,7 @@ class LoginController extends AbstractController
                 $request->getSession()->set('user_login', $user['login']);
                 
                 $this->addFlash('success', 'Login realizado com sucesso!');
-                return $this->redirectToRoute('/financas/dashboard'); // Rota para página inicial
+                return $this->redirectToRoute('financas_dashboard'); // Rota para página inicial
             } else {
                 // Login falhou
                 $this->addFlash('error', 'Usuário ou senha inválidos');
