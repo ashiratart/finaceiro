@@ -1,0 +1,245 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Financeiro{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }} <link rel="stylesheet" href="/css/dashboard.css"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-4">
+
+<h1 class="mb-4">
+    Dashboard Financeiro 
+    <span class="text-muted">| {{ mesAtual }}/{{ anoAtual }}</span>
+</h1>
+
+<!-- KPIs -->
+<div class="graficos-grid mb-4">
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-title">Despesas Fixas</div>
+            <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-title">Consumo</div>
+            <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="kpi-card">
+            <div class="kpi-title">Pago no Mês</div>
+            <div class="kpi-value text-success">
+                R$ {{ totalPago|number_format(2, ',', '.') }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GRÁFICOS -->
+<div class="graficos-grid">
+    <div class="col-md-4">
+        <div class="card grafico-card">
+            <h6>Despesas Fixas</h6>
+            <canvas id="graficoFixas"></canvas>
+            <p class="info-text">
+                Total: R$ {{ totalPago|number_format(2, ',', '.') }}
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card grafico-card">
+            <h6>Consumo</h6>
+            <canvas id="graficoConsumo"></canvas>
+            <p class="info-text">
+                Total: R$ {{ totalPago|number_format(2, ',', '.') }}
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card grafico-card">
+            <h6>Pagas no Mês</h6>
+            <canvas id="graficoPagas"></canvas>
+            <p class="info-text">
+                Total: R$ {{ totalPago|number_format(2, ',', '.') }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- TABELAS -->
+<div class="graficos-grid mt-4">
+
+    <div class="col-md-4">
+        <div class="card tabela-card">
+            <h6>Despesas Fixas</h6>
+
+            {% if despesasFixas is not empty %}
+                <div class="table-container">
+                    <table class="table">
+                        <tbody>
+                            {% for despesa in despesasFixas %}
+                            <tr>
+                                <td>{{ despesa.ds_motivo }}</td>
+                                <td class="text-end">
+                                    R$ {{ despesa.vl_valor|number_format(2, ',', '.') }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">Nenhuma despesa.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card tabela-card">
+            <h6>Consumo</h6>
+
+            {% if despesasConsumo is not empty %}
+                <div class="table-container">
+                    <table class="table">
+                        <tbody>
+                            {% for despesa in despesasConsumo %}
+                            <tr>
+                                <td>{{ despesa.ds_motivo }}</td>
+                                <td>{{ despesa.dt_consumo|date('d/m') }}</td>
+                                <td class="text-end">
+                                    R$ {{ despesa.vl_valor|number_format(2, ',', '.') }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">Nenhuma despesa.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card tabela-card">
+            <h6>Pagas</h6>
+
+            {% if despesasPagas is not empty %}
+                <div class="table-container">
+                    <table class="table">
+                        <tbody>
+                            {% for despesa in despesasPagas %}
+                            <tr>
+                                <td>{{ despesa.ds_motivo }}</td>
+                                <td>{{ despesa.dt_pag|date('d/m') }}</td>
+                                <td class="text-end">
+                                    R$ {{ despesa.vl_valor|number_format(2, ',', '.') }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">Nenhuma despesa.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    /* 🔥 Plugin texto no centro */
+    const centerTextPlugin = {
+        id: 'centerText',
+        beforeDraw(chart) {
+            const { width, height } = chart;
+            const ctx = chart.ctx;
+
+            ctx.restore();
+
+            const total = chart.config.data.datasets[0].data
+                .reduce((a, b) => a + b, 0);
+
+            const text = "R$ " + total.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2
+            });
+
+            ctx.font = "bold 16px sans-serif";
+            ctx.fillStyle = "#cfcfcf";
+            ctx.textBaseline = "middle";
+
+            const textX = Math.round((width - ctx.measureText(text).width) / 2);
+            const textY = height / 2;
+
+            ctx.fillText(text, textX, textY);
+
+            ctx.save();
+        }
+    };
+
+    Chart.register(centerTextPlugin);
+
+    function generateColors(count) {
+        const palette = [
+            '#4F46E5','#22C55E','#F59E0B','#EF4444',
+            '#3B82F6','#10B981','#F97316','#8B5CF6'
+        ];
+        return Array.from({length: count}, (_, i) => palette[i % palette.length]);
+    }
+
+    const chartOptions = {
+        responsive: true,
+        cutout: '70%',
+        plugins: {
+            legend: { display: false }
+        }
+    };
+
+    function createChart(id, labels, data) {
+        if (!labels.length) return;
+
+        new Chart(document.getElementById(id), {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    data,
+                    backgroundColor: generateColors(labels.length)
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    createChart("graficoFixas",
+        [{% for d in despesasFixas %}'{{ d.ds_motivo|e('js') }}',{% endfor %}],
+        [{% for d in despesasFixas %}{{ d.vl_valor }},{% endfor %}]
+    );
+
+    createChart("graficoConsumo",
+        [{% for d in despesasConsumo %}'{{ d.ds_motivo|e('js') }}',{% endfor %}],
+        [{% for d in despesasConsumo %}{{ d.vl_valor }},{% endfor %}]
+    );
+
+    createChart("graficoPagas",
+        [{% for d in despesasPagas %}'{{ d.ds_motivo|e('js') }}',{% endfor %}],
+        [{% for d in despesasPagas %}{{ d.vl_valor }},{% endfor %}]
+    );
+
+});
+</script>
+
+{% endblock %}
