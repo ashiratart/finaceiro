@@ -34,6 +34,7 @@ h1 {
     text-align: center;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     transition: 0.2s;
+    height: 100%;
 }
 
 .kpi-card:hover {
@@ -42,12 +43,12 @@ h1 {
 }
 
 .kpi-title {
-    font-size: 13px;
+    font-size: 0.8rem;
     color: #94a3b8;
 }
 
 .kpi-value {
-    font-size: 22px;
+    font-size: 1.4rem;
     font-weight: bold;
     color: #f8fafc;
 }
@@ -60,6 +61,7 @@ h1 {
     padding: 20px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     transition: 0.2s;
+    height: 100%;
 }
 
 .card:hover {
@@ -76,16 +78,17 @@ h1 {
 
 .graficos-grid > div {
     flex: 1 1 calc(33.333% - 20px);
+    min-width: 250px;
 }
 
 .grafico-card {
     text-align: center;
-    width: 100%;
 }
 
 .grafico-card canvas {
-    max-width: 180px;
-    margin: 0 auto;
+    max-width: 200px;
+    max-height: 200px;
+    margin: 10px auto;
     display: block;
 }
 
@@ -102,17 +105,18 @@ canvas {
 
 /* ===== TABELAS ===== */
 .tabela-card {
-    height: 100%;
+    overflow: hidden;
 }
 
 .table-container {
-    max-height: 250px;
+    max-height: 220px;
     overflow-y: auto;
 }
 
 .table {
     font-size: 13px;
     color: #e5e7eb;
+    margin-bottom: 0;
 }
 
 .table tr {
@@ -126,6 +130,7 @@ canvas {
 /* Scroll */
 .table-container::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
 }
 
 .table-container::-webkit-scrollbar-thumb {
@@ -136,7 +141,7 @@ canvas {
 /* ===== FORMULÁRIO ===== */
 .form-label {
     color: #94a3b8;
-    font-size: 13px;
+    font-size: 0.8rem;
     font-weight: 500;
     margin-bottom: 4px;
 }
@@ -147,8 +152,8 @@ canvas {
     border: 1px solid #334155;
     color: #e5e7eb;
     border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 10px 12px;
+    font-size: 15px;
 }
 
 .form-control:focus,
@@ -161,6 +166,8 @@ canvas {
 .form-check-input {
     background-color: #0f172a;
     border: 1px solid #475569;
+    width: 1.1em;
+    height: 1.1em;
 }
 
 .form-check-input:checked {
@@ -170,44 +177,168 @@ canvas {
 
 .form-check-label {
     color: #cbd5f5;
-    font-size: 13px;
+    font-size: 0.9rem;
 }
 
 .btn-primary-custom {
     background-color: #3b82f6;
     border: none;
     color: white;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
     font-weight: 600;
     width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
 .btn-primary-custom:hover {
     background-color: #2563eb;
 }
 
-/* ===== FORM STICKY (UX TOP) ===== */
-.dashboard-form .card {
-    position: sticky;
-    top: 20px;
+/* ===== FORM STICKY (apenas em desktop) ===== */
+@media (min-width: 993px) {
+    .dashboard-form .card {
+        position: sticky;
+        top: 20px;
+    }
 }
 
-/* ===== RESPONSIVO ===== */
+/* ==============================================
+   RESPONSIVO - TABLETS e MOBILE (≤992px)
+   ============================================== */
 @media (max-width: 992px) {
     .dashboard-layout {
         flex-direction: column;
+        gap: 24px;
     }
-
+    
     .dashboard-form {
         width: 100%;
+        min-width: 0;
     }
 
+    .graficos-grid {
+        gap: 16px;
+    }
+    
     .graficos-grid > div {
+        flex: 1 1 calc(50% - 16px);
+        min-width: 200px;
+    }
+}
+
+/* ==============================================
+   SMARTPHONES (≤600px)
+   ============================================== */
+@media (max-width: 600px) {
+    .container-fluid {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .kpi-card {
+        padding: 16px 12px;
+    }
+
+    .kpi-title {
+        font-size: 0.75rem;
+    }
+    
+    .kpi-value {
+        font-size: 1.2rem;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .form-control,
+    .form-select {
+        padding: 12px 14px;
+        font-size: 16px;           /* Evita zoom automático no iOS */
+    }
+
+    .btn-primary-custom {
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    /* Form check mais tocável */
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0.15em;
+    }
+    .form-check-label {
+        font-size: 0.9rem;
+        padding-left: 4px;
+    }
+
+    /* Gráficos Doughnut */
+    .grafico-card canvas {
+        max-width: 160px;
+        max-height: 160px;
+        margin: 10px auto;
+    }
+
+    h6 {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    /* Tabelas mais compactas e com rolagem horizontal se necessário */
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .table td,
+    .table th {
+        padding: 10px 6px;
+        white-space: nowrap;
+    }
+
+    .table-container {
+        max-height: 250px;
+        overflow-x: auto;
+    }
+
+    /* KPIs viram grid de 1 coluna em telas muito pequenas */
+    .graficos-grid:first-of-type > div {
+        flex: 1 1 100%;
+    }
+}
+
+/* ==============================================
+   TELAS MUITO PEQUENAS (≤380px)
+   ============================================== */
+@media (max-width: 480px) {
+    /* KPIs em 2 colunas e depois 1 coluna */
+    .graficos-grid:first-of-type > div {
         flex: 1 1 100%;
     }
 
+    .kpi-value {
+        font-size: 1.1rem;
+    }
+    
     .grafico-card canvas {
-        max-width: 220px;
+        max-width: 140px;
+        max-height: 140px;
+    }
+
+    .table {
+        font-size: 0.75rem;
+    }
+
+    h1 {
+        font-size: 1.3rem;
     }
 }
