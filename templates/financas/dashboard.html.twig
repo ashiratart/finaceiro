@@ -31,6 +31,11 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label">Fornecedor</label>
+                        <input type="text" class="form-control" name="fornecedor">
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label">Valor</label>
                         <input type="number" step="0.01" class="form-control" name="valor" required>
                     </div>
@@ -65,14 +70,14 @@
                 <div>
                     <div class="kpi-card">
                         <div class="kpi-title">Despesas Fixas</div>
-                        <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
+                        <div class="kpi-value">R$ {{ vl_fixas|number_format(2, ',', '.') }}</div>
                     </div>
                 </div>
 
                 <div>
                     <div class="kpi-card">
                         <div class="kpi-title">Consumo</div>
-                        <div class="kpi-value">R$ {{ totalPago|number_format(2, ',', '.') }}</div>
+                        <div class="kpi-value">R$ {{ vl_consumo|number_format(2, ',', '.') }}</div>
                     </div>
                 </div>
 

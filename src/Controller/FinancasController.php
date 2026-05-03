@@ -25,6 +25,7 @@ class FinancasController extends AbstractController
         if ($request->isMethod('POST')) {
             // Obtém os dados do formulário
             $motivo   = $request->request->get('motivo');
+            $fornecedor = $request->request->get('fornecedor');
             $valor    = $request->request->get('valor');
             $dtConsumo = $request->request->get('data_consumo');
             $dtPag    = $request->request->get('data_pagamento');
@@ -34,6 +35,7 @@ class FinancasController extends AbstractController
             if ($motivo && $valor && $dtConsumo) {
                 $data = [
                     'ds_motivo'   => $motivo,
+                    'ds_fornecedor' => $fornecedor ?: null,
                     'vl_valor'    => (float) $valor,
                     'dt_consumo'  => $dtConsumo,
                     'dt_pag'      => $dtPag ?: null, // pode ser null se ainda não paga
@@ -57,7 +59,13 @@ class FinancasController extends AbstractController
         $anoAtual = date('Y');
         
         $despesasFixas = $this->despesasRepository->findDespesasFixas();
+        $vl_fixas = array_reduce($despesasFixas, function($carry, $item) {
+            return $carry + $item['vl_valor'];
+        }, 0);
         $despesasConsumo = $this->despesasRepository->findDespesasConsumoMesAtual();
+        $vl_consumo = array_reduce($despesasConsumo, function($carry, $item) {
+            return $carry + $item['vl_valor'];
+        }, 0);
         $despesasPagas = $this->despesasRepository->findDespesasPagasMesAtual();
         $totalPago = $this->despesasRepository->getTotalDespesasPagasMesAtual();
         
@@ -65,6 +73,8 @@ class FinancasController extends AbstractController
             'despesasPagas' => $despesasPagas,
             'despesasConsumo' => $despesasConsumo,
             'despesasFixas' => $despesasFixas,
+            'vl_fixas' => $vl_fixas,
+            'vl_consumo' => $vl_consumo,
             'totalPago' => $totalPago,
             'mesAtual' => $mesAtual,
             'anoAtual' => $anoAtual,

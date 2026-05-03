@@ -16,19 +16,21 @@ class DespesasRepository
     
     public function findDespesasPagasMesAtual(): array
     {
+        $diaAtual = date('d');
         $mesAtual = date('m');
         $anoAtual = date('Y');
         
-        $sql = "
-            SELECT * 
-            FROM despesas 
-            WHERE dt_pag IS NOT NULL 
-            AND MONTH(dt_pag) = :mesAtual 
-            AND YEAR(dt_pag) = :anoAtual
-            ORDER BY dt_pag DESC
-        ";
+            $sql = "
+                SELECT * 
+                FROM despesas 
+                WHERE dt_pag <= CURDATE()
+                AND MONTH(dt_pag) = :mesAtual 
+                AND YEAR(dt_pag) = :anoAtual
+                ORDER BY dt_pag DESC
+            ";
         
         return $this->connection->executeQuery($sql, [
+            'diaAtual' => $diaAtual,
             'mesAtual' => $mesAtual,
             'anoAtual' => $anoAtual
         ])->fetchAllAssociative();
@@ -45,7 +47,6 @@ class DespesasRepository
             WHERE dt_consumo IS NOT NULL 
             AND MONTH(dt_consumo) = :mesAtual 
             AND YEAR(dt_consumo) = :anoAtual
-            AND (ds_fixa = 0 OR ds_fixa IS NULL)
             ORDER BY dt_consumo DESC
         ";
         
@@ -69,18 +70,20 @@ class DespesasRepository
     
     public function getTotalDespesasPagasMesAtual(): float
     {
+        $diaAtual = date('d');
         $mesAtual = date('m');
         $anoAtual = date('Y');
         
         $sql = "
             SELECT COALESCE(SUM(vl_valor), 0) as total
             FROM despesas 
-            WHERE dt_pag IS NOT NULL 
+            WHERE dt_pag <= CURDATE()
             AND MONTH(dt_pag) = :mesAtual 
             AND YEAR(dt_pag) = :anoAtual
         ";
         
         $result = $this->connection->executeQuery($sql, [
+            'diaAtual' => $diaAtual,
             'mesAtual' => $mesAtual,
             'anoAtual' => $anoAtual
         ])->fetchAssociative();
